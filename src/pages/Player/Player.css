@@ -1,0 +1,140 @@
+.player-container {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f172a 0%, #001174 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animasi Background Partikel/Glow (Opsional untuk estetika) */
+.player-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+    animation: rotateGlow 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotateGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.player-brand {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+.player-brand img {
+    height: 60px;
+}
+
+.standby-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 60px 80px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.standby-content h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+}
+
+.otp-box {
+    background: white;
+    color: #001174;
+    font-size: 80px;
+    font-weight: 800;
+    letter-spacing: 15px;
+    padding: 20px 40px;
+    border-radius: 16px;
+    display: inline-block;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    font-family: monospace;
+}
+
+.otp-timer {
+    margin-top: 30px;
+    font-size: 16px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.status-badge {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #22c55e;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsiveness untuk Layar Kecil (Mobile / Portrait TV) */
+@media (max-width: 768px) {
+    .standby-content {
+        padding: 40px 30px;
+        width: 90%;
+        box-sizing: border-box;
+    }
+
+    .standby-content h1 {
+        font-size: 24px;
+    }
+
+    .otp-box {
+        font-size: 48px;
+        letter-spacing: 8px;
+        padding: 15px 20px;
+    }
+
+    .otp-timer {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .otp-box {
+        font-size: 36px;
+        letter-spacing: 5px;
+        padding: 10px 15px;
+    }
+}

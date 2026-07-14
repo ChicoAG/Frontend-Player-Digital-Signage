@@ -1,0 +1,14 @@
+.design-viewer-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background-color: #000;
+}
+
+.design-canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}

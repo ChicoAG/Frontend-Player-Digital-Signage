@@ -21,6 +21,15 @@ const Player = () => {
     });
     const [debugApi, setDebugApi] = useState('');
     const isRefreshing = useRef(false);
+    const isStartup = useRef(true);
+
+    useEffect(() => {
+        // Set isStartup false setelah 5 detik untuk mencegah race condition pada saat booting
+        const startupTimer = setTimeout(() => {
+            isStartup.current = false;
+        }, 5000);
+        return () => clearTimeout(startupTimer);
+    }, []);
 
     useEffect(() => {
         // Ambil data OTP dan Token dari localStorage
@@ -35,15 +44,9 @@ const Player = () => {
             return;
         }
 
-        if (otp) {
-            setOtpCode(otp);
-        }
-        if (machineSn) {
-            setSn(machineSn);
-        }
-        if (expiresAt) {
-            setOtpExpiresAt(expiresAt);
-        }
+        if (otp) setOtpCode(otp);
+        if (machineSn) setSn(machineSn);
+        if (expiresAt) setOtpExpiresAt(expiresAt);
 
         // Buka koneksi WebSocket ke backend
         const socket = io("http://192.168.0.160:3000", {
@@ -65,8 +68,12 @@ const Player = () => {
                             return prev;
                         });
                     } else {
-                        localStorage.removeItem('active_design');
-                        setActiveDesign(null);
+                        if (!isStartup.current) {
+                            localStorage.removeItem('active_design');
+                            setActiveDesign(null);
+                        } else {
+                            console.log("Mengabaikan active: false karena sedang startup (mencegah kedipan OTP)");
+                        }
                     }
                 } else {
                     setDebugApi(`Error API: ${response.status} ${response.statusText}`);
@@ -81,11 +88,8 @@ const Player = () => {
             // Kirim token lewat event 'join-display' agar TV masuk ke room socket
             socket.emit("join-display", token);
             
-            // Beri jeda 1.5 detik agar backend selesai meregistrasi socket sebelum kita nge-fetch status design-nya.
-            // Ini mencegah race condition di mana backend membalas {active: false} sesaat sebelum mengenali socket ini.
-            setTimeout(() => {
-                fetchActiveContent();
-            }, 1500);
+            // Langsung fetch konten, tidak perlu delay 1.5s lagi karena sudah ada isStartup
+            fetchActiveContent();
         });
 
         socket.on('sync-content', () => {

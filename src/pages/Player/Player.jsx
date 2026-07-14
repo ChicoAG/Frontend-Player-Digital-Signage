@@ -51,7 +51,12 @@ const Player = () => {
                     const data = await response.json();
                     setDebugApi(JSON.stringify(data));
                     if (data.active && data.design) {
-                        setActiveDesign(data.design);
+                        setActiveDesign(prev => {
+                            if (JSON.stringify(prev) !== JSON.stringify(data.design)) {
+                                return data.design;
+                            }
+                            return prev;
+                        });
                     } else {
                         setActiveDesign(null);
                     }
@@ -91,7 +96,13 @@ const Player = () => {
             }
         });
 
+        // Auto-refresh konten setiap 30 detik agar sesuai jadwal
+        const contentInterval = setInterval(() => {
+            fetchActiveContent();
+        }, 30000);
+
         return () => {
+            clearInterval(contentInterval);
             socket.disconnect();
         };
 

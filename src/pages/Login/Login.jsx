@@ -15,7 +15,7 @@ const Login = () => {
     const [successMsg, setSuccessMsg] = useState('');
     const location = useLocation();
 
-    // Cek apakah ada pesan error dari redirect halaman lain
+    // Cek apakah ada pesan error dari redirect halaman lain, atau jika sudah login
     React.useEffect(() => {
         if (location.state?.error) {
             setErrorMsg(location.state.error);
@@ -23,7 +23,13 @@ const Login = () => {
         if (location.state?.message) {
             setSuccessMsg(location.state.message);
         }
-    }, [location.state]);
+
+        // Jika sudah punya token dan tidak sedang menampilkan error dari socket, langsung masuk
+        const token = localStorage.getItem('display_token');
+        if (token && !location.state?.error) {
+            navigate('/player');
+        }
+    }, [location.state, navigate]);
 
     const handleChange = (e) => {
         setFormData({

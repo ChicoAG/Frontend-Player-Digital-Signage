@@ -1,6 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './DesignViewer.css';
 
+const getMediaUrl = (url) => {
+    if (!url) return '';
+    let fixedUrl = url.replace(/localhost(:\d+)?/g, '192.168.0.160:3000');
+    fixedUrl = fixedUrl.replace(/127\.0\.0\.1(:\d+)?/g, '192.168.0.160:3000');
+    if (fixedUrl.startsWith('/')) {
+        return `http://192.168.0.160:3000${fixedUrl}`;
+    }
+    return fixedUrl;
+};
+
 const ShapeRenderer = ({ shape }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -96,7 +106,7 @@ const ShapeRenderer = ({ shape }) => {
                     if (isVideo) {
                         return (
                             <video
-                                src={item.url}
+                                src={getMediaUrl(item.url)}
                                 style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
                                 autoPlay muted loop
                             />
@@ -104,7 +114,7 @@ const ShapeRenderer = ({ shape }) => {
                     } else {
                         return (
                             <img
-                                src={item.url}
+                                src={getMediaUrl(item.url)}
                                 alt="media"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
                             />

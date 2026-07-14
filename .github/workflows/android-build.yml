@@ -16,7 +16,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22'
         cache: 'npm'
 
     - name: Install NPM Dependencies
@@ -34,13 +34,7 @@ jobs:
     - name: Generate Android Project
       env:
         CAPACITOR_TELEMETRY: false
-      run: npx cap add android > cap.log 2>&1 || true
-
-    - name: Upload Error Log
-      uses: actions/upload-artifact@v4
-      with:
-        name: error-log
-        path: cap.log
+      run: npx cap add android
 
     - name: Build Android APK
       working-directory: ./android

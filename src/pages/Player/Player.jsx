@@ -12,7 +12,13 @@ const Player = () => {
     const [sn, setSn] = useState('');
     const [otpExpiresAt, setOtpExpiresAt] = useState('');
     const [socketError, setSocketError] = useState('');
-    const [activeDesign, setActiveDesign] = useState(null);
+    const [activeDesign, setActiveDesign] = useState(() => {
+        const savedDesign = localStorage.getItem('active_design');
+        if (savedDesign) {
+            try { return JSON.parse(savedDesign); } catch (e) { return null; }
+        }
+        return null;
+    });
     const [debugApi, setDebugApi] = useState('');
     const isRefreshing = useRef(false);
 
@@ -51,6 +57,7 @@ const Player = () => {
                     const data = await response.json();
                     setDebugApi(JSON.stringify(data));
                     if (data.active && data.design) {
+                        localStorage.setItem('active_design', JSON.stringify(data.design));
                         setActiveDesign(prev => {
                             if (JSON.stringify(prev) !== JSON.stringify(data.design)) {
                                 return data.design;
@@ -58,6 +65,7 @@ const Player = () => {
                             return prev;
                         });
                     } else {
+                        localStorage.removeItem('active_design');
                         setActiveDesign(null);
                     }
                 } else {

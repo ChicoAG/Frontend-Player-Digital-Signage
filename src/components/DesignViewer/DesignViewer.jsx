@@ -121,19 +121,29 @@ const ShapeRenderer = ({ shape }) => {
                     const isVideo = item.url?.toLowerCase().match(/\.(mp4|webm|ogg)$/);
                     if (isVideo) {
                         return (
-                            <video
-                                src={getMediaUrl(item.url)}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
-                                autoPlay muted loop
-                            />
+                            <div style={{width: '100%', height: '100%', position: 'relative'}}>
+                                <video
+                                    src={getMediaUrl(item.url)}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+                                    autoPlay muted loop
+                                />
+                                <div style={{position: 'absolute', top: 0, left: 0, background: 'rgba(255,0,0,0.8)', color: 'white', zIndex: 9999, fontSize: '10px', padding: '2px'}}>
+                                    RAW: {item.url} <br/> FIXED: {getMediaUrl(item.url)}
+                                </div>
+                            </div>
                         );
                     } else {
                         return (
-                            <img
-                                src={getMediaUrl(item.url)}
-                                alt="media"
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
-                            />
+                            <div style={{width: '100%', height: '100%', position: 'relative'}}>
+                                <img
+                                    src={getMediaUrl(item.url)}
+                                    alt="media"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }}
+                                />
+                                <div style={{position: 'absolute', top: 0, left: 0, background: 'rgba(255,0,0,0.8)', color: 'white', zIndex: 9999, fontSize: '10px', padding: '2px'}}>
+                                    RAW: {item.url} <br/> FIXED: {getMediaUrl(item.url)}
+                                </div>
+                            </div>
                         );
                     }
                 }

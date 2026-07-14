@@ -3,6 +3,7 @@
   "appName": "PlayerSignage",
   "webDir": "dist",
   "server": {
+    "androidScheme": "http",
     "cleartext": true
   },
   "plugins": {

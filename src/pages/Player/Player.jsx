@@ -80,8 +80,12 @@ const Player = () => {
         socket.on("connect", () => {
             // Kirim token lewat event 'join-display' agar TV masuk ke room socket
             socket.emit("join-display", token);
-            // Muat konten awal saat terhubung
-            fetchActiveContent();
+            
+            // Beri jeda 1.5 detik agar backend selesai meregistrasi socket sebelum kita nge-fetch status design-nya.
+            // Ini mencegah race condition di mana backend membalas {active: false} sesaat sebelum mengenali socket ini.
+            setTimeout(() => {
+                fetchActiveContent();
+            }, 1500);
         });
 
         socket.on('sync-content', () => {

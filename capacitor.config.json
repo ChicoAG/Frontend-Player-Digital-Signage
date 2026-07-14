@@ -1,5 +1,8 @@
 {
   "appId": "com.norxel.playersignage",
   "appName": "PlayerSignage",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
 }

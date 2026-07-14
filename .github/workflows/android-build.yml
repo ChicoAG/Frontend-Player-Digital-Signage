@@ -34,15 +34,13 @@ jobs:
     - name: Generate Android Project
       env:
         CAPACITOR_TELEMETRY: false
-      run: |
-        npx cap add android > error.txt 2>&1 || {
-          git config --global user.name "Bot"
-          git config --global user.email "bot@example.com"
-          git add error.txt
-          git commit -m "Auto upload error log"
-          git push origin master
-          exit 1
-        }
+      run: npx cap add android > cap.log 2>&1 || true
+
+    - name: Upload Error Log
+      uses: actions/upload-artifact@v4
+      with:
+        name: error-log
+        path: cap.log
 
     - name: Build Android APK
       working-directory: ./android

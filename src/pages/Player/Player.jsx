@@ -40,11 +40,11 @@ const Player = () => {
         }
 
         // Buka koneksi WebSocket ke backend
-        const socket = io("http://192.168.0.160:3000");
+        const socket = io("https://polite-times-fold.loca.lt");
 
         const fetchActiveContent = async () => {
             try {
-                const response = await fetch(`http://192.168.0.160:3000/display/content?token=${token}`);
+                const response = await fetch(`https://polite-times-fold.loca.lt/display/content?token=${token}`);
                 if (response.ok) {
                     const data = await response.json();
                     setDebugApi(JSON.stringify(data));
@@ -112,7 +112,7 @@ const Player = () => {
                     const token = localStorage.getItem('display_token');
                     if (!token) return;
 
-                    const response = await fetch(`http://192.168.0.160:3000/display/refresh-otp?token=${token}`, {
+                    const response = await fetch(`https://polite-times-fold.loca.lt/display/refresh-otp?token=${token}`, {
                         method: 'POST'
                     });
 

@@ -40,11 +40,17 @@ const Player = () => {
         }
 
         // Buka koneksi WebSocket ke backend
-        const socket = io("https://polite-times-fold.loca.lt");
+        const socket = io("https://polite-times-fold.loca.lt", {
+            extraHeaders: {
+                "Bypass-Tunnel-Reminder": "true"
+            }
+        });
 
         const fetchActiveContent = async () => {
             try {
-                const response = await fetch(`https://polite-times-fold.loca.lt/display/content?token=${token}`);
+                const response = await fetch(`https://polite-times-fold.loca.lt/display/content?token=${token}`, {
+                    headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setDebugApi(JSON.stringify(data));
@@ -113,7 +119,8 @@ const Player = () => {
                     if (!token) return;
 
                     const response = await fetch(`https://polite-times-fold.loca.lt/display/refresh-otp?token=${token}`, {
-                        method: 'POST'
+                        method: 'POST',
+                        headers: { 'Bypass-Tunnel-Reminder': 'true' }
                     });
 
                     if (response.ok) {

@@ -3,12 +3,28 @@ import './DesignViewer.css';
 
 const getMediaUrl = (url) => {
     if (!url) return '';
-    let fixedUrl = url.replace(/localhost(:\d+)?/g, '192.168.0.160:3000');
-    fixedUrl = fixedUrl.replace(/127\.0\.0\.1(:\d+)?/g, '192.168.0.160:3000');
-    if (fixedUrl.startsWith('/')) {
-        return `http://192.168.0.160:3000${fixedUrl}`;
+    try {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            const parsed = new URL(url);
+            if (parsed.hostname === 'localhost' || 
+                parsed.hostname === '127.0.0.1' || 
+                parsed.hostname.startsWith('192.168.') || 
+                parsed.hostname.startsWith('10.') || 
+                parsed.hostname.startsWith('172.')) {
+                
+                parsed.hostname = '192.168.0.160';
+                parsed.port = '3000';
+                return parsed.toString();
+            }
+            return url;
+        }
+    } catch (e) {}
+
+    if (url.startsWith('/')) {
+        return `http://192.168.0.160:3000${url}`;
+    } else {
+        return `http://192.168.0.160:3000/${url}`;
     }
-    return fixedUrl;
 };
 
 const ShapeRenderer = ({ shape }) => {

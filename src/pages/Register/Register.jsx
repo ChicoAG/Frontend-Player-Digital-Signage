@@ -29,11 +29,10 @@ const Register = () => {
         setErrorMsg('');
         
         try {
-            const response = await fetch('https://polite-times-fold.loca.lt/machine/register', {
+            const response = await fetch('http://192.168.0.160:3000/machine/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Bypass-Tunnel-Reminder': 'true'
                 },
                 body: JSON.stringify({
                     name_machine: formData.machineName,

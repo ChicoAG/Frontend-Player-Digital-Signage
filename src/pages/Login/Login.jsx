@@ -38,11 +38,10 @@ const Login = () => {
         setErrorMsg('');
         
         try {
-            const response = await fetch('https://polite-times-fold.loca.lt/machine/login', {
+            const response = await fetch('http://192.168.0.160:3000/machine/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Bypass-Tunnel-Reminder': 'true'
                 },
                 body: JSON.stringify({
                     sn_machine: formData.sn,

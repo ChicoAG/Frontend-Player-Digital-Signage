@@ -40,7 +40,9 @@ const Player = () => {
         }
 
         // Buka koneksi WebSocket ke backend
-        const socket = io("http://192.168.0.160:3000");
+        const socket = io("http://192.168.0.160:3000", {
+            transports: ["websocket"]
+        });
 
         const fetchActiveContent = async () => {
             try {

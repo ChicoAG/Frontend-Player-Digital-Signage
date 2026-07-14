@@ -31,8 +31,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Sync Capacitor Android
-      run: npx --yes @capacitor/cli sync android
+    - name: Copy Web Assets to Android
+      run: |
+        rm -rf android/app/src/main/assets/public
+        cp -r dist android/app/src/main/assets/public
 
     - name: Build Android APK
       working-directory: ./android

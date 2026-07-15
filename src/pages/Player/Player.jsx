@@ -103,7 +103,10 @@ const Player = () => {
 
         socket.on('sync-content', () => {
             console.log('Ada pembaruan desain! Memuat ulang konten...');
-            fetchActiveContent();
+            // Jeda 1 detik untuk memberi waktu backend DB commit perubahan (mencegah race condition)
+            setTimeout(() => {
+                fetchActiveContent();
+            }, 1000);
         });
 
         socket.on('otp-updated', (data) => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Monitor, Lock, User } from 'lucide-react';
 import './Login.css';
 import logoImg from '../../assets/NX-Logo.png';
@@ -148,9 +148,6 @@ const Login = () => {
                     </div>
                 </form>
 
-                <div className="auth-links">
-                    Belum Terdaftar? <Link to="/register">Daftar di sini</Link>
-                </div>
             </div>
         </div>
     );

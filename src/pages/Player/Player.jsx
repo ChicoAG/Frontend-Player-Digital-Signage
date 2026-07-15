@@ -19,17 +19,7 @@ const Player = () => {
         }
         return null;
     });
-    const [debugApi, setDebugApi] = useState('');
-    const isRefreshing = useRef(false);
-    const isStartup = useRef(true);
-
-    useEffect(() => {
-        // Set isStartup false setelah 5 detik untuk mencegah race condition pada saat booting
-        const startupTimer = setTimeout(() => {
-            isStartup.current = false;
-        }, 5000);
-        return () => clearTimeout(startupTimer);
-    }, []);
+    const [isInitialFetch, setIsInitialFetch] = useState(true);
 
     useEffect(() => {
         // Ambil data OTP dan Token dari localStorage
@@ -49,8 +39,6 @@ const Player = () => {
         if (expiresAt) setOtpExpiresAt(expiresAt);
 
         // Langsung paksa refresh OTP dari backend saat aplikasi baru dibuka
-        // Ini mencegah bug di mana TV menampilkan OTP lama dari localStorage 
-        // yang ternyata sudah kedaluwarsa atau tidak valid di database backend.
         const forceRefreshOtp = async () => {
             try {
                 const response = await fetch(`http://192.168.0.160:3000/display/refresh-otp?token=${token}`, {
@@ -91,12 +79,8 @@ const Player = () => {
                             return prev;
                         });
                     } else {
-                        if (!isStartup.current) {
-                            localStorage.removeItem('active_design');
-                            setActiveDesign(null);
-                        } else {
-                            console.log("Mengabaikan active: false karena sedang startup (mencegah kedipan OTP)");
-                        }
+                        localStorage.removeItem('active_design');
+                        setActiveDesign(null);
                     }
                 } else {
                     setDebugApi(`Error API: ${response.status} ${response.statusText}`);
@@ -104,6 +88,8 @@ const Player = () => {
             } catch (error) {
                 console.error("Gagal mengambil konten aktif:", error);
                 setDebugApi(`Network Error: ${error.message}`);
+            } finally {
+                setIsInitialFetch(false);
             }
         };
 
@@ -194,6 +180,14 @@ const Player = () => {
 
         return () => clearInterval(intervalId);
     }, [otpExpiresAt, navigate]);
+
+    if (isInitialFetch) {
+        return (
+            <div className="player-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a', color: 'white' }}>
+                <h2>Memuat data dari server...</h2>
+            </div>
+        );
+    }
 
     return (
         <>

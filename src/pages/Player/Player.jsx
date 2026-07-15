@@ -48,6 +48,29 @@ const Player = () => {
         if (machineSn) setSn(machineSn);
         if (expiresAt) setOtpExpiresAt(expiresAt);
 
+        // Langsung paksa refresh OTP dari backend saat aplikasi baru dibuka
+        // Ini mencegah bug di mana TV menampilkan OTP lama dari localStorage 
+        // yang ternyata sudah kedaluwarsa atau tidak valid di database backend.
+        const forceRefreshOtp = async () => {
+            try {
+                const response = await fetch(`http://192.168.0.160:3000/display/refresh-otp?token=${token}`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.otp_code && data.otp_expires_at) {
+                        setOtpCode(data.otp_code);
+                        setOtpExpiresAt(data.otp_expires_at);
+                        localStorage.setItem('otp_code', data.otp_code);
+                        localStorage.setItem('otp_expires_at', data.otp_expires_at);
+                    }
+                }
+            } catch (e) {
+                console.error("Gagal force refresh OTP on startup", e);
+            }
+        };
+        forceRefreshOtp();
+
         // Buka koneksi WebSocket ke backend
         const socket = io("http://192.168.0.160:3000", {
             transports: ["websocket"]

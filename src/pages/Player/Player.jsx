@@ -116,10 +116,11 @@ const Player = () => {
             }
         });
 
-        // Auto-refresh konten setiap 30 detik agar sesuai jadwal
+        // Auto-refresh konten setiap 5 detik agar cepat tanggap terhadap takedown / perubahan jadwal
+        // karena backend tampaknya tidak selalu mengirim event socket 'sync-content' saat takedown
         const contentInterval = setInterval(() => {
             fetchActiveContent();
-        }, 30000);
+        }, 5000);
 
         return () => {
             clearInterval(contentInterval);

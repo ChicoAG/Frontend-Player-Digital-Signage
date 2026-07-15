@@ -19,7 +19,17 @@ const Player = () => {
         }
         return null;
     });
-    const [isInitialFetch, setIsInitialFetch] = useState(true);
+    const [debugApi, setDebugApi] = useState('');
+    const isRefreshing = useRef(false);
+    const isStartup = useRef(true);
+
+    useEffect(() => {
+        // Set isStartup false setelah 5 detik untuk mencegah race condition pada saat booting
+        const startupTimer = setTimeout(() => {
+            isStartup.current = false;
+        }, 5000);
+        return () => clearTimeout(startupTimer);
+    }, []);
 
     useEffect(() => {
         // Ambil data OTP dan Token dari localStorage
@@ -37,27 +47,6 @@ const Player = () => {
         if (otp) setOtpCode(otp);
         if (machineSn) setSn(machineSn);
         if (expiresAt) setOtpExpiresAt(expiresAt);
-
-        // Langsung paksa refresh OTP dari backend saat aplikasi baru dibuka
-        const forceRefreshOtp = async () => {
-            try {
-                const response = await fetch(`http://192.168.0.160:3000/display/refresh-otp?token=${token}`, {
-                    method: 'POST'
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.otp_code && data.otp_expires_at) {
-                        setOtpCode(data.otp_code);
-                        setOtpExpiresAt(data.otp_expires_at);
-                        localStorage.setItem('otp_code', data.otp_code);
-                        localStorage.setItem('otp_expires_at', data.otp_expires_at);
-                    }
-                }
-            } catch (e) {
-                console.error("Gagal force refresh OTP on startup", e);
-            }
-        };
-        forceRefreshOtp();
 
         // Buka koneksi WebSocket ke backend
         const socket = io("http://192.168.0.160:3000", {
@@ -79,8 +68,16 @@ const Player = () => {
                             return prev;
                         });
                     } else {
-                        localStorage.removeItem('active_design');
-                        setActiveDesign(null);
+                        if (!isStartup.current) {
+                            localStorage.removeItem('active_design');
+                            setActiveDesign(null);
+                        } else {
+                            console.log("Mengabaikan active: false karena sedang startup (mencegah kedipan OTP)");
+                            // Cek ulang setelah masa startup selesai agar tidak tertahan 30 detik
+                            setTimeout(() => {
+                                fetchActiveContent();
+                            }, 5000);
+                        }
                     }
                 } else {
                     setDebugApi(`Error API: ${response.status} ${response.statusText}`);
@@ -88,8 +85,6 @@ const Player = () => {
             } catch (error) {
                 console.error("Gagal mengambil konten aktif:", error);
                 setDebugApi(`Network Error: ${error.message}`);
-            } finally {
-                setIsInitialFetch(false);
             }
         };
 
@@ -103,10 +98,7 @@ const Player = () => {
 
         socket.on('sync-content', () => {
             console.log('Ada pembaruan desain! Memuat ulang konten...');
-            // Jeda 1 detik untuk memberi waktu backend DB commit perubahan (mencegah race condition)
-            setTimeout(() => {
-                fetchActiveContent();
-            }, 1000);
+            fetchActiveContent();
         });
 
         socket.on('otp-updated', (data) => {
@@ -183,14 +175,6 @@ const Player = () => {
 
         return () => clearInterval(intervalId);
     }, [otpExpiresAt, navigate]);
-
-    if (isInitialFetch) {
-        return (
-            <div className="player-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f172a', color: 'white' }}>
-                <h2>Memuat data dari server...</h2>
-            </div>
-        );
-    }
 
     return (
         <>
